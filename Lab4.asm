@@ -12,18 +12,30 @@
 ;int main()
 ;return address
 LD R6, STACK_BOTTOM ; R6 = x6000
-
-;Clear out GP register
-AND R1,R1, #0
-ADD R1, R1, #5
-
-;Move stack pointer R6
+;Note if I get an exam question, push happens in 3 parts
+;Get the value I want into a register, in this case my ARRAY_SIZE
+;Move the stack pointer(R6) down, aka reserve a space
+;Then store the register into that reserve space
+LD R1, ARRAY_SIZE
 ADD R6, R6, #-1
-STR R1, R6, #0 ;Stores the value 5 the new value of R6, this is my X
+STR R1, R6, #0 ;R1 now has my array size of 5 in it
 
-JSR SQUARE_NUM
+;Same principles, just changing the tools
+LEA R2, ARRAY
+ADD R6, R6, #-1
+STR R2, R6, #0 ; R2 now has my array in it
+JSR SumOfSquares
+
+LDR R0, R6, #0
+ADD R6, R6, #1
+ADD R6, R6, #1
+ADD R6, R6, #1
+
+ADD R6, R6, #-1 
+STR R0, R6, #0
 
 ;Now read the values by popping of the stack, remember LIFO, so I need to pop in reverse order
+
 
 
 HALT
