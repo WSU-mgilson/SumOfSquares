@@ -81,12 +81,81 @@ SQUARE_NUM
     ADD R6, R6, #1
     RET
 
+;Takes in an array and the array's length
+;Need to reserve space for the final return value R0
+;Need to reserve space for the Return Address R7
+;Need to reserve space for the Frame Pointer R5
+SumOfSquares
+    ADD R6, R6, #-1 ;Return value
+    ADD R6, R6, #-1 ; Return Address
+    STR R7, R6, #0
 
+    ADD R6, R6, #-1
+    STR R5, R6, #0
+
+    ;Reserve space for locals, I now have two, so copy from Square + 1
+    ADD R5, R6, #-1
+    ADD R6, R6, #-1 ;local var 1
+    ADD R6, R6, #-1 ; local var 2
+
+    AND R1, R1, #0
+    STR R1, R5, #0 ;Sum = 0
+    STR R1, R5, #-1  ;counter & index = 0 
+    
+    ;call square function on the current element
+    ;add result from square function to Sum Variable
+    ;Increment I and Count Variable
+    ;Branch if positive, need to check my other loops because I mix this up all the time for the order, bc it backwards
+
+    ITERATE_ARRAY
+        LDR R2, R5, #4 ;Sum
+        LDR R3, R5, #-1 ;index and count
+        ADD R2, R2, R3
+        LDR, R2, R2, #0 ; read current value in R2, on pass 1 =2
+        ADD R6, R6, #-1
+        STR R2, R6, #0
+        JSR SQUARE_NUM
+        LDR R2, R6, #0
+        ADD R6, R6, #1
+        ADD R6, R6, #1
+        LDR R3, R5, #0
+        ADD R3, R3, R2
+        STR R3, R5, #0
+
+        LDR R3, R5, #-1 ;R3 is safe to use bc I already stored its value
+        ADD R3, R3, #1
+        STR R3, R5, #-1
+
+        ;EXit logic
+        NOT R3, R3
+        ADD R3, R3, #1 ;We are now at the original number 
+        LDR R2, R5, #5
+        ADD R3, R3, R2
+    BRp ITERATE_ARRAY
+
+    LDR R1, R5, #0
+    STR R1, R5, #3
+
+    ADD R6, R5, #1
+    LDR R5, R6, #0
+
+    ;pop
+    ADD R6, R6, #1
+    LDR R7, R6, #0
+    ADD R6, R6, #1 
+    RET
+    BRnz ITERATE_ARRAY
 
 
 
     
 
+ARRAY   .FILL #2
+        .FIll #3
+        .FILL #5
+        .FILL #0
+        .FILL #1
 
+ARRAY_SIZE .FILL #5
 STACK_BOTTOM .FILL x6000
 .END
